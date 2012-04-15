@@ -1,32 +1,106 @@
 = pcut
 
-* http://github.com/#{github_username}/#{project_name}
+* http://github.com/bonar/pcut
 
 == DESCRIPTION:
 
-FIX (describe your package)
+Yet another cutting tool.
+pcut adds some features to cut command.
 
-== FEATURES/PROBLEMS:
+=== append field number, vertical print
 
-* FIX (list of features or problems)
+Check field number before cutting.
+when you have log line like this:
+
+  $ cat test 
+  127.0.0.1 - frank [10/Oct/2000:13:55:36 -0700] "GET /apache_pb.gif HTTP/1.0" 200 2326 "http://www.example.com/start.html" "Mozilla/4.08 [en] (Win98; I ;Nav)"
+
+You can cut line and get field number with --preview(-p).
+It helps you to specify field number with -f option.
+
+  $ cat test | pcut -d " " --preview
+  [1]127.0.0.1 [2]- [3]frank [4][10/Oct/2000:13:55:36 [5]-0700] [6]"GET [7]/apache_pb.gif [8]HTTP/1.0" [9]200 [10]2326 [11]"http://www.example.com/start.html" [12]"Mozilla/4.08 [13][en] [14](Win98; [15]I [16];Nav)"
+
+With --vertical(-v), cut results are joined by LF.
+
+  $ cat test | pcut -d " " --preview --vertical
+  [1]127.0.0.1
+  [2]-
+  [3]frank
+  [4][10/Oct/2000:13:55:36
+  [5]-0700]
+  [6]"GET
+  [7]/apache_pb.gif
+  [8]HTTP/1.0"
+  [9]200
+  [10]2326
+  [11]"http://www.example.com/start.html"
+  [12]"Mozilla/4.08
+  [13][en]
+  [14](Win98;
+  [15]I
+  [16];Nav)"
+
+=== quoting
+
+With -q option, pcut keep quoted strings as one field.
+This function is usefull on logs like apache access log. Those logs
+are likely to contain free text (path, user agent) and it may contains
+cut delimiter.
+
+-q specified quoting chars. 
+
+  $ cat test | pcut -d " " --preview --vertical -q "DS["
+  [1]127.0.0.1
+  [2]-[3]frank
+  [4]10/Oct/2000:13:55:36 -0700
+  [5]GET /apache_pb.gif HTTP/1.0
+  [6]200[7]2326
+  [8]http://www.example.com/start.html
+  [9]Mozilla/4.08 [en] (Win98; I ;Nav)
+
+D="dounble quote", S="single quote", [="[]", (="()"
+You can set multiple chars to quote.
+
+=== sub queries
+
+You can get partial string by cutting the cut result again
+with original syntax [/#{delimiter}/, #{index}].
+This is useful for getting platform from UserAgent, or getting file extention
+string from PATH.
+
+  $ cat test | pcut -d " " --preview --vertical -q "D[" -k -f "4, 5"
+  [4][10/Oct/2000:13:55:36 -0700]
+  [5]"GET /apache_pb.gif HTTP/1.0"
+  
+  $ cat test | pcut -d " " --preview --vertical -q "D[" -k -f "4, 5.[/ /,2]"
+  [4][10/Oct/2000:13:55:36 -0700]
+  [5.[/ /,2]]/apache_pb.gif
+  
+  $ cat test | pcut -d " " --preview --vertical -q "D[" -k -f "4, 5.[/ /,2].[/./,2]"
+  [4][10/Oct/2000:13:55:36 -0700]
+  [5.[/ /,2].[/./,2]]gif
+  
+  $ cat test | pcut -d " " -q "D[" -k -f "4, 5.[/ /,2].[/./,2]"
+  [10/Oct/2000:13:55:36 -0700] gif
 
 == SYNOPSIS:
 
-  FIX (code sample of usage)
+see pcut --help
 
 == REQUIREMENTS:
 
-* FIX (list of requirements)
+term-ansicolor
 
 == INSTALL:
 
-* FIX (sudo gem install, anything else)
+sudo gem install pcut
 
 == LICENSE:
 
 (The MIT License)
 
-Copyright (c) 2012 FIXME full name
+Copyright (c) 2012 Nakano Kyohei
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the

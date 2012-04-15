@@ -1,0 +1,63 @@
+#!/usr/bin/ruby
+
+require 'optparse'
+require 'rubygems'
+require 'pcut'
+require 'pcut/cli'
+
+cli = Pcut::CLI.new
+
+opt = OptionParser.new
+opt.version = Pcut::VERSION
+
+opt.on('-d DELIMITER', 'cut delimiter (tab is the default)') do |v|
+  cli.delimiter = v
+  cli.joiner = v
+end
+# opt.on('-j JOIN', 'specifies char used to join cut result') do
+# end
+opt.on('-f FIELD',
+       "FIELD specifies the list of field to pickup.",
+       "example)",
+       "  single field: -f 2,3,4",
+       "  range: -f 2- / -f -3",
+       "  sub query: -f \"2.[/ /, 4].[/./, 2]\""
+      )  do |v|
+  fields = cli.parse_field(v)
+  cli.fields = fields
+end
+opt.on('-q QUOTE', '--quote QUOTE',
+       'QUOTE specifies quoting characters. If quoting characters are specified,',
+       'quoted strings are treated as one string (not separated).',
+       'Variations:',
+       ' - D: double quote',
+       ' - S: single quote',
+       ' - [: []',
+       ' - (: ()',
+       'You can specify multiple quotes like: "-q DS[("'
+  ) do |v|
+  cli.quote = v
+end
+opt.on('-k', '--keep-quote', 'not delete quote chars') do
+  cli.keep_quote = true
+end
+opt.on('-p', '--preview', 'show field number header') do
+  cli.preview = true
+end
+opt.on('-t', '--vertical', 'print cut result vertically') do
+  cli.vertical = true
+end
+opt.on('-n', '--no-color', 'turn colot output off') do
+  cli.color = false
+end
+
+begin
+  opt.parse!(ARGV)
+rescue => e
+  $stderr.puts e.to_s
+  exit(1)
+end
+
+Signal.trap(:INT) { exit(0) }
+cli.start(ARGV.shift)
+
