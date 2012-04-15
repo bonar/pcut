@@ -17,13 +17,18 @@ module Pcut
     }
     DELIMITER = "\t"
 
-    attr_reader :quote_guard
-    attr_accessor :keep_quotes
+    attr_accessor \
+      :quote_guard,
+      :keep_quotes,
+      :skip_continuous_delimiters
 
     def initialize
       @quote_guard  = {}
       @delimiter    = DELIMITER
-      @keep_quotes  = false # do not delete quoting chars
+      # do not delete quoting chars
+      @keep_quotes  = false
+      # treat continuous delimiters as one delimiters
+      @skip_continuous_delimiters = false
     end
 
     def set_quote_guard(quote)
@@ -48,6 +53,13 @@ module Pcut
       partials = []
 
       str.each_char do |c|
+
+        # skip continuous delimiters
+        if skip_continuous_delimiters &&
+          @delimiter == c &&
+          @delimiter == previous_char
+          next
+        end
 
         # check starting quote
         if @quote_guard.include?(c) &&

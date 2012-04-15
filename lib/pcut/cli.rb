@@ -19,7 +19,8 @@ module Pcut
       :keep_quote,
       :preview,
       :vertical,
-      :color
+      :color,
+      :skip_continuous_delimiters
     
     def initialize
       @delimiter  = "\t"
@@ -30,6 +31,7 @@ module Pcut
       @preview    = false
       @vertical   = false
       @color      = true
+      @skip_continuous_delimiters = false
     end
 
     def parse_field(str)
@@ -74,6 +76,7 @@ module Pcut
       begin
         parser = Pcut::LineParser.new
         parser.set_delimiter(@delimiter)
+        parser.skip_continuous_delimiters = @skip_continuous_delimiters
         @quote.each_char { |c| parser.set_quote_guard(c) } if @quote
         parser.keep_quotes = true if @keep_quote
       rescue => e

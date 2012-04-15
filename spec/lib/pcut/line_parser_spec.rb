@@ -182,6 +182,13 @@ describe Pcut::LineParser do
 
   end
 
+  it 'skips continuous delimiters if needed' do
+    @parser.skip_continuous_delimiters = true
+    @parser.set_delimiter(" ")
+    result = @parser.parse("1979   8  23   bonar   ")
+    result.should == ['1979', '8', '23', 'bonar']
+  end
+
   describe 'real world sample' do
 
     before(:each) do

@@ -50,6 +50,10 @@ end
 opt.on('-n', '--no-color', 'turn colot output off') do
   cli.color = false
 end
+opt.on('-c', '--skip-continuous-deimiters',
+  'treat continuous delimiters as one delimiter') do
+  cli.skip_continuous_delimiters = true
+end
 
 begin
   opt.parse!(ARGV)
