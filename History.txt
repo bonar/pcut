@@ -1,3 +1,12 @@
+
+=== 0.1.0 2012-03-29
+
+* Add 2 features:
+  * -c to skip continuous delimiters
+  * -j to specifies char to join cut result
+
+=== 0.0.2 2012-03-29
+
 === 0.0.1 2012-03-29
 
 * 1 major enhancement:
