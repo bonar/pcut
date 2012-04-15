@@ -54,6 +54,11 @@ opt.on('-c', '--skip-continuous-deimiters',
   'treat continuous delimiters as one delimiter') do
   cli.skip_continuous_delimiters = true
 end
+opt.on('-j JOIN', '--join JOIN',
+  'JOIN specifies the letter used to join cut result.',
+  'You can use "TAB" to specify tab character.') do |v|
+  cli.set_joiner(v)
+end
 
 begin
   opt.parse!(ARGV)

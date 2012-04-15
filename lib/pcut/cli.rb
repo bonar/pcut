@@ -34,6 +34,18 @@ module Pcut
       @skip_continuous_delimiters = false
     end
 
+    def set_joiner(char)
+      if char == "TAB"
+        @joiner = "\t"
+        return
+      end
+      if char.size != 1
+        STDERR.puts "join char must be 1 byte char or 'TAB'"
+        exit(1)
+      end
+      @joiner = char
+    end
+
     def parse_field(str)
       targets = []
 
